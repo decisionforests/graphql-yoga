@@ -1,44 +1,51 @@
-import { GraphQLSchema, isSchema, print } from 'graphql'
+import { type GraphQLSchema, isSchema, print } from 'graphql'
 import {
-  GetEnvelopedFn,
+  type GetEnvelopedFn,
   envelop,
   useMaskedErrors,
-  UseMaskedErrorsOpts,
+  type UseMaskedErrorsOpts,
   useExtendContext,
   enableIf,
   useLogger,
   useSchema,
-  PromiseOrValue,
+  type PromiseOrValue,
 } from '@envelop/core'
-import { useValidationCache, ValidationCache } from '@envelop/validation-cache'
-import { ParserCacheOptions, useParserCache } from '@envelop/parser-cache'
-import { makeExecutableSchema } from '@graphql-tools/schema'
-import { ExecutionResult, IResolvers, TypeSource } from '@graphql-tools/utils'
 import {
-  GraphQLServerInject,
-  YogaInitialContext,
-  FetchEvent,
-  FetchAPI,
-  GraphQLParams,
+  useValidationCache,
+  type ValidationCache,
+} from '@envelop/validation-cache'
+import { type ParserCacheOptions, useParserCache } from '@envelop/parser-cache'
+import { makeExecutableSchema } from '@graphql-tools/schema'
+import {
+  type ExecutionResult,
+  type IResolvers,
+  type TypeSource,
+} from '@graphql-tools/utils'
+import {
+  type GraphQLServerInject,
+  type YogaInitialContext,
+  type FetchEvent,
+  type FetchAPI,
+  type GraphQLParams,
 } from './types.js'
 import {
-  OnRequestHook,
-  OnRequestParseDoneHook,
-  OnRequestParseHook,
-  OnResponseHook,
-  OnResultProcess,
-  Plugin,
-  RequestParser,
-  ResultProcessor,
+  type OnRequestHook,
+  type OnRequestParseDoneHook,
+  type OnRequestParseHook,
+  type OnResponseHook,
+  type OnResultProcess,
+  type Plugin,
+  type RequestParser,
+  type ResultProcessor,
 } from './plugins/types.js'
 import * as crossUndiciFetch from '@whatwg-node/fetch'
 import { processRequest as processGraphQLParams } from './processRequest.js'
-import { defaultYogaLogger, titleBold, YogaLogger } from './logger.js'
-import { CORSPluginOptions, useCORS } from './plugins/useCORS.js'
+import { defaultYogaLogger, titleBold, type YogaLogger } from './logger.js'
+import { type CORSPluginOptions, useCORS } from './plugins/useCORS.js'
 import { useHealthCheck } from './plugins/useHealthCheck.js'
 import {
-  GraphiQLOptions,
-  GraphiQLOptionsOrFactory,
+  type GraphiQLOptions,
+  type GraphiQLOptionsOrFactory,
   useGraphiQL,
 } from './plugins/useGraphiQL.js'
 import { useRequestParser } from './plugins/useRequestParser.js'
@@ -94,73 +101,73 @@ export type YogaServerOptions<
   TServerContext extends Record<string, any>,
   TUserContext extends Record<string, any>,
   TRootValue,
-> = {
-  /**
-   * Enable/disable logging or provide a custom logger.
-   * @default true
-   */
-  logging?: boolean | YogaLogger
-  /**
-   * Prevent leaking unexpected errors to the client. We highly recommend enabling this in production.
-   * If you throw `GraphQLYogaError`/`EnvelopError` within your GraphQL resolvers then that error will be sent back to the client.
-   *
-   * You can lean more about this here:
-   * @see https://graphql-yoga.vercel.app/docs/features/error-masking
-   *
-   * Default: `true`
-   */
-  maskedErrors?: boolean | UseMaskedErrorsOpts
-  /**
-   * Context
-   */
-  context?:
+  > = {
+    /**
+     * Enable/disable logging or provide a custom logger.
+     * @default true
+     */
+    logging?: boolean | YogaLogger
+    /**
+     * Prevent leaking unexpected errors to the client. We highly recommend enabling this in production.
+     * If you throw `GraphQLYogaError`/`EnvelopError` within your GraphQL resolvers then that error will be sent back to the client.
+     *
+     * You can lean more about this here:
+     * @see https://graphql-yoga.vercel.app/docs/features/error-masking
+     *
+     * Default: `true`
+     */
+    maskedErrors?: boolean | UseMaskedErrorsOpts
+    /**
+     * Context
+     */
+    context?:
     | ((
-        initialContext: YogaInitialContext & TServerContext,
-      ) => Promise<TUserContext> | TUserContext)
+      initialContext: YogaInitialContext & TServerContext,
+    ) => Promise<TUserContext> | TUserContext)
     | Promise<TUserContext>
     | TUserContext
 
-  cors?: CORSPluginOptions<TServerContext>
+    cors?: CORSPluginOptions<TServerContext>
 
-  /**
-   * GraphQL endpoint
-   */
-  endpoint?: string
+    /**
+     * GraphQL endpoint
+     */
+    endpoint?: string
 
-  /**
-   * GraphiQL options
-   *
-   * Default: `true`
-   */
-  graphiql?: GraphiQLOptionsOrFactory<TServerContext>
+    /**
+     * GraphiQL options
+     *
+     * Default: `true`
+     */
+    graphiql?: GraphiQLOptionsOrFactory<TServerContext>
 
-  renderGraphiQL?: (options?: GraphiQLOptions) => PromiseOrValue<BodyInit>
+    renderGraphiQL?: (options?: GraphiQLOptions) => PromiseOrValue<BodyInit>
 
-  schema?:
+    schema?:
     | GraphQLSchema
     | {
-        typeDefs: TypeSource
-        resolvers?:
-          | IResolvers<
-              TRootValue,
-              TUserContext & TServerContext & YogaInitialContext
-            >
-          | Array<
-              IResolvers<
-                TRootValue,
-                TUserContext & TServerContext & YogaInitialContext
-              >
-            >
-      }
+      typeDefs: TypeSource
+      resolvers?:
+      | IResolvers<
+        TRootValue,
+        TUserContext & TServerContext & YogaInitialContext
+      >
+      | Array<
+        IResolvers<
+          TRootValue,
+          TUserContext & TServerContext & YogaInitialContext
+        >
+      >
+    }
 
-  parserCache?: boolean | ParserCacheOptions
-  validationCache?: boolean | ValidationCache
-  fetchAPI?: Partial<FetchAPI>
-  multipart?: boolean
-  id?: string
-} & Partial<
-  OptionsWithPlugins<TUserContext & TServerContext & YogaInitialContext>
->
+    parserCache?: boolean | ParserCacheOptions
+    validationCache?: boolean | ValidationCache
+    fetchAPI?: Partial<FetchAPI>
+    multipart?: boolean
+    id?: string
+  } & Partial<
+    OptionsWithPlugins<TUserContext & TServerContext & YogaInitialContext>
+  >
 
 export function getDefaultSchema() {
   return makeExecutableSchema({
@@ -205,7 +212,7 @@ export class YogaServer<
   TServerContext extends Record<string, any>,
   TUserContext extends Record<string, any>,
   TRootValue,
-> {
+  > {
   /**
    * Instance of envelop
    */
@@ -239,9 +246,9 @@ export class YogaServer<
       ? isSchema(options.schema)
         ? options.schema
         : makeExecutableSchema({
-            typeDefs: options.schema.typeDefs,
-            resolvers: options.schema.resolvers,
-          })
+          typeDefs: options.schema.typeDefs,
+          resolvers: options.schema.resolvers,
+        })
       : getDefaultSchema()
 
     const logger = options?.logging != null ? options.logging : true
@@ -250,11 +257,11 @@ export class YogaServer<
         ? logger === true
           ? defaultYogaLogger
           : {
-              debug: () => {},
-              error: () => {},
-              warn: () => {},
-              info: () => {},
-            }
+            debug: () => { },
+            error: () => { },
+            warn: () => { },
+            info: () => { },
+          }
         : logger
 
     const maskedErrors = options?.maskedErrors ?? true
@@ -637,17 +644,17 @@ export class YogaServer<
 
 export type YogaServerInstance<TServerContext, TUserContext, TRootValue> =
   YogaServer<TServerContext, TUserContext, TRootValue> &
-    (
-      | WindowOrWorkerGlobalScope['fetch']
-      | ((context: { request: Request }) => Promise<Response>)
-    )
+  (
+    | WindowOrWorkerGlobalScope['fetch']
+    | ((context: { request: Request }) => Promise<Response>)
+  )
 
 export function createServer<
   TServerContext extends Record<string, any> = {},
   TUserContext extends Record<string, any> = {},
   TRootValue = {},
->(
-  options?: YogaServerOptions<TServerContext, TUserContext, TRootValue>,
+  >(
+    options?: YogaServerOptions<TServerContext, TUserContext, TRootValue>,
 ): YogaServerInstance<TServerContext, TUserContext, TRootValue> {
   const server = new YogaServer<TServerContext, TUserContext, TRootValue>(
     options,
@@ -663,10 +670,10 @@ export function createServer<
     // Then ctx is present and it is the context
     return server.handleRequest(input, ctx)
   }
-  return new Proxy(server as any, {
+  return new Proxy(fnHandler as any, {
     // It should have all the attributes of the handler function and the server instance
     has: (_, prop) => {
-      return prop in fnHandler || prop in server
+      return prop in server || prop in fnHandler
     },
     get: (_, prop) => {
       if (server[prop]) {

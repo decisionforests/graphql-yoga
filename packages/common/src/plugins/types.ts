@@ -1,33 +1,40 @@
-import { Plugin as EnvelopPlugin, PromiseOrValue } from '@envelop/core'
-import { ExecutionResult } from 'graphql'
-import { ExecutionPatchResult, FetchAPI, GraphQLParams } from '../types.js'
+import {
+  type Plugin as EnvelopPlugin,
+  type PromiseOrValue,
+} from '@envelop/core'
+import { type ExecutionResult } from 'graphql'
+import {
+  type ExecutionPatchResult,
+  type FetchAPI,
+  type GraphQLParams,
+} from '../types.js'
 
 export type Plugin<
   PluginContext extends Record<string, any> = {},
   TServerContext = {},
   TUserContext = {},
-> = EnvelopPlugin<PluginContext> & {
-  /**
-   * Use this hook with your own risk. It is still experimental and may change in the future.
-   * @internal
-   */
-  onRequest?: OnRequestHook<TServerContext>
-  /**
-   * Use this hook with your own risk. It is still experimental and may change in the future.
-   * @internal
-   */
-  onRequestParse?: OnRequestParseHook
-  /**
-   * Use this hook with your own risk. It is still experimental and may change in the future.
-   * @internal
-   */
-  onResultProcess?: OnResultProcess
-  /**
-   * Use this hook with your own risk. It is still experimental and may change in the future.
-   * @internal
-   */
-  onResponse?: OnResponseHook<TServerContext>
-}
+  > = EnvelopPlugin<PluginContext> & {
+    /**
+     * Use this hook with your own risk. It is still experimental and may change in the future.
+     * @internal
+     */
+    onRequest?: OnRequestHook<TServerContext>
+    /**
+     * Use this hook with your own risk. It is still experimental and may change in the future.
+     * @internal
+     */
+    onRequestParse?: OnRequestParseHook
+    /**
+     * Use this hook with your own risk. It is still experimental and may change in the future.
+     * @internal
+     */
+    onResultProcess?: OnResultProcess
+    /**
+     * Use this hook with your own risk. It is still experimental and may change in the future.
+     * @internal
+     */
+    onResponse?: OnResponseHook<TServerContext>
+  }
 
 export type OnRequestHook<TServerContext> = (
   payload: OnRequestEventPayload<TServerContext>,
