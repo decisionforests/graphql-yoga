@@ -5,6 +5,6 @@
     "start": "bun index.ts"
   },
   "dependencies": {
-    "@graphql-yoga/common": "2.10.0"
+    "@graphql-yoga/common": "2.12.3"
   }
 }
