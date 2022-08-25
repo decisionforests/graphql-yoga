@@ -84,6 +84,10 @@ import { useHTTPValidationError } from './plugins/requestValidation/useHTTPValid
 import { usePreventMutationViaGET } from './plugins/requestValidation/usePreventMutationViaGET.js'
 import { useUnhandledRoute } from './plugins/useUnhandledRoute.js'
 import { yogaDefaultFormatError } from './utils/yogaDefaultFormatError.js'
+import {
+  useMaskedErrors,
+  UseMaskedErrorsOpts,
+} from './plugins/useMaskedError.js'
 import { useSchema, YogaSchemaDefinition } from './plugins/useSchema.js'
 
 /**
@@ -108,7 +112,7 @@ export type YogaServerOptions<
    *
    * Default: `true`
    */
-  maskedErrors?: boolean
+  maskedErrors?: boolean | UseMaskedErrorsOpts
   /**
    * Context
    */
@@ -356,7 +360,7 @@ export class YogaServer<
       useHTTPValidationError(),
       // We make sure that the user doesn't send a mutation with GET
       usePreventMutationViaGET(),
-      // this.maskedErrorsOpts != null && useMaskedErrors(this.maskedErrorsOpts),
+      this.maskedErrorsOpts != null && useMaskedErrors(this.maskedErrorsOpts),
       useUnhandledRoute({
         graphqlEndpoint: this.graphqlEndpoint,
         showLandingPage: options?.landingPage ?? true,
